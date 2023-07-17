@@ -4,14 +4,6 @@ const Expense = require("../models/expense");
 exports.post = async (req, res, next) => {
   try {
     const data = req.body;
-
-    // expense
-    // category
-    // amount
-    // date
-    // paymentMethod
-    // note
-
     if (
       data.expense &&
       data.category &&
