@@ -43,15 +43,11 @@ function ModalAtom({
       >
         <div className="modal-container">
           <div className="modal-body">{modalBody && modalBody}</div>
-          {/* <div className="modal-image">
-            <div className="modal-image-container"> */}
               <img
                 src={modalImage}
                 alt="side image"
                 className="modal-image-element"
               />
-            {/* </div>
-          </div> */}
         </div>
       </Modal>
     </>
