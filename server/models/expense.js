@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-// Expense	Category	Amount	Date	Payment Method
-
 const expenseSchema = new mongoose.Schema({
     expense: {
         type: String,
