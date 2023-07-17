@@ -1,34 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { Pie } from '@ant-design/plots';
 
 const DemoPie = ({data} :any) => {
-//   const data = [
-//     {
-//       type: 'a',
-//       value: 27,
-//     },
-//     {
-//       type: 'b',
-//       value: 25,
-//     },
-//     {
-//       type: 'c',
-//       value: 18,
-//     },
-//     {
-//       type: 'd',
-//       value: 15,
-//     },
-//     {
-//       type: 'e',
-//       value: 10.2,
-//     },
-//     {
-//       type: 'f',
-//       value: 4.8,
-//     },
-//   ];
   const config = {
     appendPadding: 10,
     data,
