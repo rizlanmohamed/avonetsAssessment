@@ -1,4 +1,4 @@
-import { Button, Modal } from "antd";
+import { Modal } from "antd";
 import { useEffect, useState } from "react";
 import "./ModalAtom.scss";
 
