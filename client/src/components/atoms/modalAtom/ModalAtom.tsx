@@ -45,7 +45,7 @@ function ModalAtom({
           <div className="modal-body">{modalBody && modalBody}</div>
               <img
                 src={modalImage}
-                alt="side image"
+                alt="place of the graphic"
                 className="modal-image-element"
               />
         </div>
