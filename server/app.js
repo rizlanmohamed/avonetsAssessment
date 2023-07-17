@@ -23,6 +23,9 @@ if (process.env.NODE_ENV === "development") {
 const expensesRoutes = require("./routes/expenses");
 app.use("/api/Expense", expensesRoutes);
 
+const dashboardRoute = require("./routes/dashboard");
+app.use("/api/Visualization", dashboardRoute);
+
 app.all("*", (req, res) => {
     res.status(404).json({
         status: "Fail",

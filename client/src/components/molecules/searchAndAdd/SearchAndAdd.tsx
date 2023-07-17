@@ -7,6 +7,8 @@ export type SearchAndAddProps = ButtonAtomProps & InputAtomProps;
 const SearchAndAdd: React.FC<SearchAndAddProps> = ({
   inputWidth,
   inputPlaceholder,
+  inputValue,
+  inputOnChange,
   inputIcon,
   buttonText,
   buttonType,
@@ -16,6 +18,8 @@ const SearchAndAdd: React.FC<SearchAndAddProps> = ({
   const inputProps = {
     inputWidth,
     inputPlaceholder,
+    inputValue,
+    inputOnChange,
     inputIcon
   };
 

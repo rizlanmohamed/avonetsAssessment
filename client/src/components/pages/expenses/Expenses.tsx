@@ -1,9 +1,22 @@
 import { Row, Col, Input, Select, InputNumber, Form, DatePicker } from "antd";
 import SearchableCRUDTable from "../../templetes/searchableCRUDTable/SearchableCRUDTable";
 import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
-import React, { ReactNode, useState } from "react";
-import ExpenseForm from "../../molecules/expenseForm/ExpenseForm";
+import React, { ReactNode, useState, useEffect } from "react";
 import TableActionButton from "../../molecules/tableActionButton/TableActionButton";
+import { useAppSelector } from "../../../redux/store";
+import {
+  createExpense,
+  deleteExpense,
+  getExpenses,
+  updateExpense,
+  searchExpense
+} from "../../../redux/expensesSlice/expensesSlice";
+import { useDispatch } from "react-redux";
+import { Dispatch } from "redux";
+// import moment from "moment";
+// import type { DatePickerProps } from 'antd';
+import dayjs, { Dayjs } from "dayjs";
+import useDebounce from "../../../hooks/useDebounce";
 
 const SvgImage: string =
   require("../../../assets/images/svg/expenseArt.svg").default;
@@ -20,10 +33,26 @@ const Expenses: React.FC = () => {
     modalType: "create",
   });
 
+const [searchKeyword, setSearchKeyword] = useState();
+
+  const dispatch = useDispatch<Dispatch<any>>();
+
+  const data = useAppSelector((state) => state.expenses.data);
+  const loading = useAppSelector((state) => state.expenses.loading);
+  const error = useAppSelector((state) => state.expenses.error);
+
+  const debouncedKeyword = useDebounce(searchKeyword, 500);
+
+  useEffect(() => {
+    if (debouncedKeyword) {
+      dispatch(searchExpense(debouncedKeyword));
+    } else{
+      dispatch(getExpenses());
+    }
+  }, [debouncedKeyword, dispatch]);
+
   const { TextArea } = Input;
-
   const [form] = Form.useForm();
-
   const tableColumns = [
     {
       title: "Expense",
@@ -33,7 +62,27 @@ const Expenses: React.FC = () => {
     {
       title: "Category",
       dataIndex: "category",
-      key: "category",
+      key: "category",filters: [
+        {
+          text: 'Food',
+          value: 'Food',
+        },
+        {
+          text: 'Movies',
+          value: 'Movies',
+        },
+        {
+          text: 'Online Subscriptions',
+          value: 'OnlineSubscriptions',
+        },
+        {
+          text: 'Traveling',
+          value: 'Traveling',
+        },
+      ],
+      filterMode: 'tree',
+      filterSearch: true,
+      onFilter: (value: string, record:any) => record.category.startsWith(value),
     },
     {
       title: "Amount",
@@ -42,8 +91,9 @@ const Expenses: React.FC = () => {
     },
     {
       title: "Date",
-      dataIndex: "dateOfTheExpense",
+      dataIndex: "date",
       key: "date",
+      sorter: (a:any, b:any) => parseInt(a.date.split("-").join()) - parseInt(b.date.split("-").join()),
     },
     {
       title: "Payment Method",
@@ -69,43 +119,38 @@ const Expenses: React.FC = () => {
     },
   ];
 
-  const tableDataSource = [
-    {
-      key: "1",
-      expense: "Chocolate Ice cream 5L",
-      category: "Food",
-      amount: 302,
-      dateOfTheExpense: "29/07/2023",
-      paymentMethod: "Cash",
-    },
-    {
-      key: "2",
-      expense: "Laptop Skin",
-      category: "Online",
-      amount: 892,
-      dateOfTheExpense: "29/07/2023",
-      paymentMethod: "Online",
-    },
-  ];
+  const onFinish = (values: any) => {
+    const formattedDate = {
+      ...values,
+      date: dayjs(values.date).format("YYYY-MM-DD"),
+    };
+    let modalType = values._id ? "update" : "create";
 
-  const onFinish = (values: any, type: any) => {
-    //console.log("Form values", values);
-    console.log(values, type);
-    if (type === "Edit") {
+    if (modalType === "update") {
+      dispatch(updateExpense(formattedDate));
+      handleModalOnCancel();
+    } else if (modalType === "create") {
+      dispatch(createExpense(formattedDate));
+      handleModalOnCancel();
     } else {
-      console.log("Customer create works");
+      console.log('Yes this view')
+      handleModalOnCancel();
     }
   };
 
-  const modalForm = () => {
+  const modalForm = (readOnly: boolean = false) => {
     return (
       <Form
         form={form}
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 14 }}
         layout="horizontal"
-        onFinish={(values: any) => onFinish(values, modal.modalType)}
+        onFinish={(values: any) => onFinish(values)}
+        disabled={readOnly}
       >
+        <Form.Item name="_id" hidden>
+          <Input />
+        </Form.Item>
         <Form.Item
           label="Expense"
           name="expense"
@@ -131,7 +176,9 @@ const Expenses: React.FC = () => {
         <Form.Item
           label="Amount"
           name="amount"
-          rules={[{ required: true, message: "Amount is required" }]}
+          rules={[
+            { required: true, message: "Amount is required" }
+          ]}
         >
           <InputNumber />
         </Form.Item>
@@ -163,14 +210,17 @@ const Expenses: React.FC = () => {
     );
   };
 
-  const handleModalOnOk = () => {
-    form.submit();
+  const handleTableView = (record: any) => {
+    form.setFieldsValue({ ...record, date: dayjs(record.date) });
+    setModal({
+      isModalPopUp: true,
+      modalType: "view",
+      modalBody: modalForm(true),
+    });
   };
 
-  const handleTableView = (record: any) => {};
-
   const handleTableEdit = (record: any) => {
-    form.setFieldsValue(record);
+    form.setFieldsValue({ ...record, date: dayjs(record.date) });
     setModal({
       isModalPopUp: true,
       modalType: "update",
@@ -178,7 +228,9 @@ const Expenses: React.FC = () => {
     });
   };
 
-  const handleTableDelete = (record: any) => {};
+  const handleTableDelete = (record: any) => {
+    dispatch(deleteExpense(record._id));
+  };
 
   const handleAddButton = () => {
     setModal({
@@ -197,6 +249,10 @@ const Expenses: React.FC = () => {
     });
   };
 
+  const handleModalOnOk = () => {
+    form.submit();
+  };
+
   const handleModalNaming = (
     actionType: "create" | "update" | "view" | null,
     extraName: string
@@ -204,6 +260,11 @@ const Expenses: React.FC = () => {
     return actionType
       ? actionType.charAt(0).toUpperCase() + actionType.slice(1) + extraName
       : "Loading";
+  };
+
+  const handleSearch = (e: any) => {
+    const keyword = e.target.value;
+    setSearchKeyword(keyword);
   };
 
   return (
@@ -218,14 +279,17 @@ const Expenses: React.FC = () => {
           modalButtonName={handleModalNaming(modal.modalType, " Expense")}
           modalImage={SvgImage}
           inputWidth="60vw"
-          inputPlaceholder="Search expenses"
+          inputPlaceholder="Advance Search by expense, category, and payment method"
+          inputValue={searchKeyword}
+          inputOnChange={(e) => handleSearch(e)}
           inputIcon={<SearchOutlined />}
           buttonText="Add Expense"
           buttonType="icon-text"
           buttonIcon={<PlusOutlined />}
           onButtonClick={handleAddButton}
+          isTableLoading={loading}
           tableColumns={tableColumns}
-          tableDataSource={tableDataSource}
+          tableDataSource={data.length >= 1 ? data : []}
         />
       </Col>
     </Row>

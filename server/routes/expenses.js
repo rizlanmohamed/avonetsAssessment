@@ -5,6 +5,7 @@ const expenseController = require("../controllers/expenseController");
 
 router.get('/GetAll', expenseController.getAll);
 router.post('/Create', expenseController.post);
+router.get('/Search', expenseController.search);
 router.get('/:id', expenseController.get);
 router.put('/Update', expenseController.put);
 router.delete('/Delete/:id', expenseController.delete);

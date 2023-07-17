@@ -19,17 +19,22 @@ const SearchableCRUDTable: React.FC<SearchableCRUDTableProps> = ({
   modalImage,
   inputWidth,
   inputPlaceholder,
+  inputValue,
+  inputOnChange,
   inputIcon,
   buttonText,
   buttonType,
   buttonIcon,
   onButtonClick,
+  isTableLoading,
   tableDataSource,
   tableColumns,
 }) => {
   const propsForSearchAndAdd = {
     inputWidth,
     inputPlaceholder,
+    inputValue,
+    inputOnChange,
     inputIcon,
     onButtonClick,
     buttonText,
@@ -38,6 +43,7 @@ const SearchableCRUDTable: React.FC<SearchableCRUDTableProps> = ({
   };
 
   const propsForTable = {
+    isTableLoading,
     tableDataSource,
     tableColumns,
   };

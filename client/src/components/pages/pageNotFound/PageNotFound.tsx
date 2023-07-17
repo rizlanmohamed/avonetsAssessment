@@ -1,9 +1,20 @@
-import React from 'react'
+import { Button, Result } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const PageNotFound: React.FC = () => {
+const App: React.FC = () => {
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate('/')
+  }
+
   return (
-    <div>PageNotFound</div>
-  )
-}
+    <Result
+      status="404"
+      title="404"
+      subTitle="Sorry, the page you visited does not exist."
+      extra={<Button type="primary" onClick={handleNavigate}>Back Dashboard</Button>}
+    />
+  );
+};
 
-export default PageNotFound
+export default App;

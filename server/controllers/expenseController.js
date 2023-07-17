@@ -21,11 +21,8 @@ exports.post = async (req, res, next) => {
     ) {
       const customerData = await Expense.create(data);
       const savedData = await customerData.save();
-      res.status(200).send({
-        status: 200,
-        message: `Customer Save Successfully.`,
-        data: savedData,
-      });
+      console.log(savedData)
+      res.status(200).send(savedData);
     } else {
       res.status(400).send({
         status: 400,
@@ -45,15 +42,14 @@ exports.getAll = async (req, res, next) => {
   try {
     const customerData = await Expense.find();
     if (!customerData) {
-      throw new Error("No Customer data found.");
+      throw new Error("No Expenses data found.");
     } else {
-      res.status(200).send({
-        status: true,
-        data: customerData,
-      });
+      res.status(200).send(
+        [...customerData],
+      );
     }
   } catch (error) {
-    throw new Error("No Customer data found.");
+    throw new Error("No Expenses data found.");
   }
 };
 
@@ -67,12 +63,12 @@ exports.get = async (req, res, next) => {
         data: singlecustomer,
       });
     } else {
-      throw new Error(`No Customer found.`);
+      throw new Error(`No Expenses found.`);
     }
   } catch (err) {
     logger.debug(`======== ${__filename} ========= ${err.stack}`);
     return res.status(500).json({
-      res: `No Customer found.`,
+      res: `No Expenses found.`,
     });
   }
 };
@@ -81,23 +77,21 @@ exports.put = async (req, res, next) => {
   try {
     const {
       _id,
-      name,
-      address,
-      phoneNumber,
-      emailAddress,
-      identityNumber,
-      totalPoints,
-      totalPurchased,
+      expense,
+      category,
+      amount,
+      date,
+      paymentMethod,
+      note,
     } = req.body;
 
     const customerToUpdate = {
-      name,
-      address,
-      phoneNumber,
-      emailAddress,
-      identityNumber,
-      totalPoints,
-      totalPurchased,
+      expense,
+      category,
+      amount,
+      date,
+      paymentMethod,
+      note,
     };
 
     const updatedData = await Expense.findOneAndUpdate(
@@ -134,22 +128,50 @@ exports.delete = async (req, res, next) => {
     if (deleteCustomer) {
       res.status(200).send({
         status: true,
-        message: "Customer member deleted.",
+        message: "Expenses deleted.",
         data: deleteCustomer,
       });
     } else {
       res.status(400).send({
         status: true,
-        message: "Customer member delete failed.",
+        message: "Expenses delete failed.",
         err: "Not deleted",
       });
 
-      throw new Error(`No Customer Member found.`);
+      throw new Error(`No expenses found.`);
     }
   } catch (err) {
     logger.debug(`======== ${__filename} ========= ${err.stack}`);
     return res.status(500).json({
-      res: `No Customer Member found.`,
+      res: `No expenses found.`,
+    });
+  }
+};
+
+exports.search = async (req, res, next) => {
+  try {
+    const { query } = req.query;
+
+    const expenses = await Expense.find({
+      $or: [
+        { expense: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+        { paymentMethod: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    if (expenses.length === 0) {
+      return res.status(404).json({
+        status: false,
+        message: "No expenses found.",
+      });
+    } else {
+      return res.status(200).json(expenses);
+    }
+  } catch (err) {
+    logger.debug(`======== ${__filename} ========= ${err.stack}`);
+    return res.status(500).json({
+      message: "Unknown error occurred.",
     });
   }
 };

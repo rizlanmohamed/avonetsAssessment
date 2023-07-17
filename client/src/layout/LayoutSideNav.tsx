@@ -9,7 +9,7 @@ import {
   BorderlessTableOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation  } from 'react-router-dom';
 
 type LayoutSideNavProps = {
   children: ReactNode;
@@ -23,19 +23,25 @@ const LayoutSideNav: React.FC<LayoutSideNavProps> = ({children}) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
+
+  const location = useLocation();
+  const selectedKey = location.pathname;
+
+  //console.log("location.pathname", location.pathname)
+
   return (
     <Layout style={{height: '100svh'}}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1" icon={<DashboardOutlined />}>
+        <Menu theme="dark" mode="inline" selectedKeys={[selectedKey]}>
+          <Menu.Item key="/" icon={<DashboardOutlined />}>
             <Link to="/">Dashboard</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<BorderlessTableOutlined />}>
+          <Menu.Item key="/expenses" icon={<BorderlessTableOutlined />}>
             <Link to="/expenses">Expenses</Link>
           </Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}>
-            <Link to="/nav3">nav 3</Link>
+          <Menu.Item key="/nav3" icon={<UploadOutlined />}>
+            <Link to="/nav3">404 Page</Link>
           </Menu.Item>
         </Menu>
       </Sider>
