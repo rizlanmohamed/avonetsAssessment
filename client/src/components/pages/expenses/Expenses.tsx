@@ -13,9 +13,7 @@ import {
 } from "../../../redux/expensesSlice/expensesSlice";
 import { useDispatch } from "react-redux";
 import { Dispatch } from "redux";
-// import moment from "moment";
-// import type { DatePickerProps } from 'antd';
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import useDebounce from "../../../hooks/useDebounce";
 
 const SvgImage: string =
@@ -41,6 +39,7 @@ const [searchKeyword, setSearchKeyword] = useState();
   const loading = useAppSelector((state) => state.expenses.loading);
   const error = useAppSelector((state) => state.expenses.error);
 
+  console.log(error)
   const debouncedKeyword = useDebounce(searchKeyword, 500);
 
   useEffect(() => {
