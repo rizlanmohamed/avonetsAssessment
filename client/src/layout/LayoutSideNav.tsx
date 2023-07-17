@@ -3,8 +3,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
   DashboardOutlined,
   BorderlessTableOutlined
 } from '@ant-design/icons';
@@ -26,8 +24,6 @@ const LayoutSideNav: React.FC<LayoutSideNavProps> = ({children}) => {
 
   const location = useLocation();
   const selectedKey = location.pathname;
-
-  //console.log("location.pathname", location.pathname)
 
   return (
     <Layout style={{height: '100svh'}}>
